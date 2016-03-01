@@ -14,7 +14,7 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<ProfileDiff> profileDiffs;
 
     @OneToMany
