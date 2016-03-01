@@ -14,6 +14,12 @@
 <li>
     <a href="/profiles/diff/add">Add Profile Diffs</a>
 </li>
+<li>
+    <a href="/profiles/getAll">All profiles</a>
+</li>
+<li>
+    <a href="/profiles/diff/getAll">All profile diffs</a>
+</li>
 
 </#macro>
 

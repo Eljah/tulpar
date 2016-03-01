@@ -52,7 +52,7 @@ public class ProfileDiffServiceImpl implements ProfileDiffService {
 
     @Override
     public List<ProfileDiff> get(List<String> names) {
-        return profileDiffRepository.findByName(names);
+        return profileDiffRepository.findByNameIn(names);
     }
 
     @Override

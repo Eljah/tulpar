@@ -58,8 +58,9 @@ public class ProfileController {
         return "profiles-list";
     }
 
-    @RequestMapping("/profiles/${profilename}/add")
-    public String addProfileDiffToProfile(@PathVariable String profilename, @RequestParam("diffs") List<String> diffs) {
+    @RequestMapping("/profiles/{profilename}/add")
+    @ResponseStatus(HttpStatus.OK)
+    public String addProfileDiffToProfile(@PathVariable("profilename") String profilename , @RequestParam("diffs") List<String> diffs,Model model) {
         Profile profile = profileService.get(profilename);
         List<ProfileDiff> profileDiffs = null;
         for (ProfileDiffService pf: profileDiffServices)
@@ -70,10 +71,26 @@ public class ProfileController {
                 break;
             }
         }
+        profile.getProfileDiffs().clear();
         profile.getProfileDiffs().addAll(profileDiffs);
         profileService.updateProfile(profile);
 
-        return "profiles-list";
+        List<Profile> profiles = profileService.getAll();
+        model.addAttribute("profiles", profiles);
+
+        List<ProfileDiff> profileDiffsAll = null;
+        for (ProfileDiffService pf: profileDiffServices)
+        {
+            profileDiffsAll=pf.getAll();
+            if (profileDiffsAll!=null)
+            {
+                break;
+            }
+        }
+
+        model.addAttribute("profilediffsall", profileDiffsAll);
+
+        return "redirect:/profiles/getAll";
     }
 
 

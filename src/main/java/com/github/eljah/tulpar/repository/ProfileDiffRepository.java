@@ -14,6 +14,6 @@ public interface ProfileDiffRepository  extends JpaRepository<ProfileDiff, Long>
 
     List<ProfileDiff> findByProfiles(Profile profile);
 
-    List<ProfileDiff> findByName(List<String> names);
+    List<ProfileDiff> findByNameIn(List<String> nameList);
 
 }

@@ -7,6 +7,7 @@ import com.github.eljah.tulpar.model.enums.UserRole;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by ilya on 29.02.16.
@@ -70,6 +71,16 @@ public abstract class ProfileDiff {
         this.id = id;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        return (this.name.equals(((ProfileDiff)o).name));
+    }
 
+    @Override
+    public String toString()
+    {
+        return (this.name);
+    }
 
 }
