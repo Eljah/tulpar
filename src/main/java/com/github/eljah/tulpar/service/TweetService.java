@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public interface TweetService {
 
-    void addTweet(User user, String text);
+    String addTweet(User user, String text);
 
     List<Tweet> getAll();
 

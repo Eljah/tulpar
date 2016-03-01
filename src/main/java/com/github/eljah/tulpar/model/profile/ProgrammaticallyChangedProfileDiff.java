@@ -1,13 +1,11 @@
 package com.github.eljah.tulpar.model.profile;
 
+import com.github.eljah.tulpar.model.enums.ProfileDiffType;
+
 /**
  * Created by ilya on 29.02.16.
  */
 public abstract class ProgrammaticallyChangedProfileDiff extends ProfileDiff {
-    String name;
-    String description;
-    String action;
-
 
     @Override
     public void setName(String name) {

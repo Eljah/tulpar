@@ -20,4 +20,37 @@ public class Profile {
     @OneToMany
     private List<Test> tests;
 
+    String name;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<ProfileDiff> getProfileDiffs() {
+        return profileDiffs;
+    }
+
+    public void setProfileDiffs(List<ProfileDiff> profileDiffs) {
+        this.profileDiffs = profileDiffs;
+    }
+
+    public List<Test> getTests() {
+        return tests;
+    }
+
+    public void setTests(List<Test> tests) {
+        this.tests = tests;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

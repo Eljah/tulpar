@@ -1,5 +1,6 @@
 package com.github.eljah.tulpar.service.impl;
 
+import com.github.eljah.tulpar.annotation.RemoteShell;
 import com.github.eljah.tulpar.repository.TweetRepository;
 import com.github.eljah.tulpar.service.TweetService;
 import com.jcraft.jsch.*;
@@ -21,20 +22,22 @@ public class TweetServiceImpl implements TweetService {
     TweetRepository tweetRepository;
 
     @Override
-    public void addTweet(User user, String text) {
+    @RemoteShell
+    public String addTweet(User user, String text) {
         Tweet tweet = new Tweet();
         tweet.setUser(user);
         tweet.setText(text);
         tweet.setCreatedAt(new Date());
         tweetRepository.save(tweet);
+        return "date";
     }
 
     @RetryIfException(value = 4)
     @Override
     public List<Tweet> getAll() {
-        if (Math.random() > 0.5) {
-            throw new RuntimeException("HAHAHAHAHAH!");
-        }
+        //if (Math.random() > 0.5) {
+        //    throw new RuntimeException("HAHAHAHAHAH!");
+        //}
         return tweetRepository.findAll();
     }
 
@@ -51,7 +54,7 @@ public class TweetServiceImpl implements TweetService {
 
         try {
             Session session=jsch.getSession("root", host, 22);
-            session.setPassword("QmPzGH29");
+            session.setPassword("******");
             session.setConfig(config);
             //todo user info
             session.connect(30000);

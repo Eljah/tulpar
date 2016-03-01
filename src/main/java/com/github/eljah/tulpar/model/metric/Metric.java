@@ -1,6 +1,8 @@
 package com.github.eljah.tulpar.model.metric;
 
 import com.github.eljah.tulpar.model.Test;
+import com.github.eljah.tulpar.model.enums.MetricType;
+import com.github.eljah.tulpar.model.enums.ProfileDiffType;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,6 +23,9 @@ public abstract class Metric {
 
     @ManyToMany
     List<Test> tests;
+
+    @Enumerated(EnumType.STRING)
+    private MetricType type;
 
     public void setName(String name)
     {

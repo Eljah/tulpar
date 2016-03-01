@@ -11,6 +11,10 @@
 
 </div>
 
+<li>
+    <a href="/profiles/diff/add">Add Profile Diffs</a>
+</li>
+
 </#macro>
 
 <@main title="Главная" customScripts=["resources/js/tweet.js"]/>

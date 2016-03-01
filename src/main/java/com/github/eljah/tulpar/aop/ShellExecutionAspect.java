@@ -1,5 +1,6 @@
 package com.github.eljah.tulpar.aop;
 
+import com.github.eljah.tulpar.annotation.RemoteShell;
 import com.jcraft.jsch.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 
@@ -51,8 +52,8 @@ public class ShellExecutionAspect {
 
     public Object callRemoteShell(ProceedingJoinPoint joinPoint) throws Throwable {
         Class clazz = joinPoint.getTarget().getClass();
-        Method method = clazz.getMethod(joinPoint.getSignature().getName());
-        //RemoteShell jsch = method.getAnnotation(RemoteShell.class);
+        //Method method = clazz.getMethod(joinPoint.getSignature().getName());
+        //RemoteShell remote = method.getAnnotation(RemoteShell.class);
         String action = (String) joinPoint.proceed();
         System.out.println("Command for execution obtained, will be passed to ssh remotely");
 

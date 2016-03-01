@@ -29,8 +29,8 @@ public class TweetController {
     public void addTweet(@RequestParam("text") String text) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         tweetService.addTweet(user, text);
-        String result=tweetService.doSSH("date","192.168.0.2");
-        tweetService.addTweet(user,result);
+        //String result=tweetService.doSSH("date","192.168.0.2");
+        //tweetService.addTweet(user,result);
     }
 
     @RequestMapping("/tweets/getAll")
