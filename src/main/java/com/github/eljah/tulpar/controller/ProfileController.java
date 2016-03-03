@@ -3,8 +3,10 @@ package com.github.eljah.tulpar.controller;
 import com.github.eljah.tulpar.model.Tweet;
 import com.github.eljah.tulpar.model.User;
 import com.github.eljah.tulpar.model.enums.ProfileDiffType;
+import com.github.eljah.tulpar.model.metric.Metric;
 import com.github.eljah.tulpar.model.profile.Profile;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
+import com.github.eljah.tulpar.service.MetricService;
 import com.github.eljah.tulpar.service.ProfileDiffService;
 import com.github.eljah.tulpar.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +31,18 @@ public class ProfileController {
     ProfileService profileService;
 
     @Autowired
+    MetricService metricService;
+
+    @Autowired
     List<ProfileDiffService> profileDiffServices;
 
     @RequestMapping("/profiles/add")
     @ResponseStatus(HttpStatus.OK)
-    public void addProfile(@RequestParam("name") String name) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String addProfile(@RequestParam("name") String name) {
+        //User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         profileService.addProfile(name);
+        return "redirect:/profiles/diff/getAll";
     }
 
     @RequestMapping("/profiles/getAll")
@@ -51,14 +57,16 @@ public class ProfileController {
                 break;
             }
         }
+        List<Metric> metrics = metricService.getAll();
 
         model.addAttribute("profiles", profiles);
         model.addAttribute("profilediffsall", profileDiffs);
+        model.addAttribute("metrics", metrics);
 
         return "profiles-list";
     }
 
-    @RequestMapping("/profiles/{profilename}/add")
+    @RequestMapping("/profiles/{profilename}/addprofile")
     @ResponseStatus(HttpStatus.OK)
     public String addProfileDiffToProfile(@PathVariable("profilename") String profilename , @RequestParam("diffs") List<String> diffs,Model model) {
         Profile profile = profileService.get(profilename);
@@ -89,6 +97,29 @@ public class ProfileController {
         }
 
         model.addAttribute("profilediffsall", profileDiffsAll);
+
+        return "redirect:/profiles/getAll";
+    }
+
+    @RequestMapping("/profiles/{profilename}/addmetric")
+    @ResponseStatus(HttpStatus.OK)
+    public String addMetricToProfile(@PathVariable("profilename") String profilename , @RequestParam("diffs") List<String> diffs,Model model) {
+        Profile profile = profileService.get(profilename);
+
+        List<Metric> metrics = metricService.get(diffs);
+        profile.getMetrics().clear();
+        profile.getMetrics().addAll(metrics);
+        profileService.updateProfile(profile);
+
+        //for (Metric m: metrics)
+        //{
+        //    metricService.updateMetric(m);
+        //}
+
+        List<Profile> profiles = profileService.getAll();
+        model.addAttribute("profiles", profiles);
+        model.addAttribute("metrics", metrics);
+
 
         return "redirect:/profiles/getAll";
     }

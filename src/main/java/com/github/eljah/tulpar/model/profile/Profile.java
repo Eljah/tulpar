@@ -1,6 +1,7 @@
 package com.github.eljah.tulpar.model.profile;
 
 import com.github.eljah.tulpar.model.Test;
+import com.github.eljah.tulpar.model.metric.Metric;
 
 import javax.persistence.*;
 import java.util.List;
@@ -16,6 +17,9 @@ public class Profile {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<ProfileDiff> profileDiffs;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Metric> metrics;
 
     @OneToMany
     private List<Test> tests;
@@ -52,5 +56,13 @@ public class Profile {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Metric> getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(List<Metric> metrics) {
+        this.metrics = metrics;
     }
 }
