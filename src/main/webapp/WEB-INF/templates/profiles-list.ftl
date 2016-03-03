@@ -4,7 +4,8 @@
 
 <div class="col-lg-6 col-lg-offset-3">
     <#list profiles as profile>
-        <p>${profile.name}
+        <p>${profile.name} (${profile.startAction}/${profile.endAction})
+           <hr/>
             (<#list profile.profileDiffs as profilediff>
             ${profilediff.name+((profilediff.type=="2")?string("*", ""))+((profilediff.type=="3")?string("**", ""))}
             </#list>
@@ -40,6 +41,10 @@
                 </td>
             </tr>
         </table>
+        <form id="${profile.name}_clone" method="get" action="/profiles/${profile.name}/clone">
+            <button type="submit" class="btn btn-default">Clone</button>
+        </form>
+
 
     </#list>
 

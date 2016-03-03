@@ -1,6 +1,7 @@
 package com.github.eljah.tulpar.service.impl;
 
 import com.github.eljah.tulpar.model.Test;
+import com.github.eljah.tulpar.model.metric.Metric;
 import com.github.eljah.tulpar.model.profile.Profile;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
 import com.github.eljah.tulpar.repository.ProfileDiffRepository;
@@ -9,6 +10,7 @@ import com.github.eljah.tulpar.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,6 +38,23 @@ public class ProfileServiceImpl implements ProfileService {
     public void updateProfile(Profile profile) {
         profileRepository.save(profile);
 
+    }
+
+    @Override
+    public void cloneProfile(Profile profile) {
+        Profile copy=new Profile();
+        copy.setName("Copy_of_"+profile.getName());
+        copy.setStartAction(profile.getStartAction());
+        copy.setEndAction(profile.getEndAction());
+        List<ProfileDiff> lpd=profile.getProfileDiffs();
+        List<ProfileDiff> lpde=new LinkedList<>();
+        copy.setProfileDiffs(lpde);
+        copy.getProfileDiffs().addAll(lpd);
+        List<Metric> lm=profile.getMetrics();
+        List<Metric> lme=new LinkedList<>();
+        copy.setMetrics(lme);
+        copy.getMetrics().addAll(lm);
+        profileRepository.save(copy);
     }
 
     @Override

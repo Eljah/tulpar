@@ -1,8 +1,12 @@
 package com.github.eljah.tulpar.model;
 
+import com.github.eljah.tulpar.model.metric.TestMetricResult;
+import com.github.eljah.tulpar.model.metric.TestRunMetricResult;
 import com.github.eljah.tulpar.model.profile.Profile;
 
 import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by ilya on 29.02.16.
@@ -21,6 +25,18 @@ public class Test {
 
     @Column
     long duration;
+
+    @Column
+    Date dateStarted;
+
+    @Column
+    Date dateEnded;
+
+    @OneToMany
+    List<TestMetricResult> testMetricResults;
+
+    @OneToMany
+    List<TestRun> testRuns;
 
     public long getId() {
         return id;
@@ -44,5 +60,37 @@ public class Test {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public Date getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(Date dateStarted) {
+        this.dateStarted = dateStarted;
+    }
+
+    public List<TestRun> getTestRuns() {
+        return testRuns;
+    }
+
+    public void setTestRuns(List<TestRun> testRuns) {
+        this.testRuns = testRuns;
+    }
+
+    public Date getDateEnded() {
+        return dateEnded;
+    }
+
+    public void setDateEnded(Date dateEnded) {
+        this.dateEnded = dateEnded;
+    }
+
+    public List<TestMetricResult> getTestMetricResults() {
+        return testMetricResults;
+    }
+
+    public void setTestMetricResults(List<TestMetricResult> testMetricResults) {
+        this.testMetricResults = testMetricResults;
     }
 }

@@ -38,10 +38,13 @@ public class ProfileController {
 
     @RequestMapping("/profiles/add")
     @ResponseStatus(HttpStatus.OK)
-    public String addProfile(@RequestParam("name") String name) {
+    public String addProfile(@RequestParam("name") String name,@RequestParam("startaction") String startaction,@RequestParam("endaction") String endaction) {
         //User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        profileService.addProfile(name);
+        Profile profile = new Profile();
+        profile.setName(name);
+        profile.setStartAction(startaction);
+        profile.setEndAction(endaction);
+        profileService.addProfile(profile);
         return "redirect:/profiles/diff/getAll";
     }
 
@@ -121,6 +124,14 @@ public class ProfileController {
         model.addAttribute("metrics", metrics);
 
 
+        return "redirect:/profiles/getAll";
+    }
+
+    @RequestMapping("/profiles/{profilename}/clone")
+    @ResponseStatus(HttpStatus.OK)
+    public String cloneProfile(@PathVariable("profilename") String profilename) {
+        Profile profile = profileService.get(profilename);
+        profileService.cloneProfile(profile);
         return "redirect:/profiles/getAll";
     }
 

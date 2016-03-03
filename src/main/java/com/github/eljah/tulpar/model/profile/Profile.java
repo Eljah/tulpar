@@ -26,6 +26,12 @@ public class Profile {
 
     String name;
 
+    @Column
+    String startAction;
+
+    @Column
+    String endAction;
+
     public long getId() {
         return id;
     }
@@ -65,4 +71,21 @@ public class Profile {
     public void setMetrics(List<Metric> metrics) {
         this.metrics = metrics;
     }
+
+    public String getStartAction() {
+        return startAction;
+    }
+
+    public void setStartAction(String startAction) {
+        this.startAction = startAction;
+    }
+
+    public String getEndAction() {
+        return endAction;
+    }
+
+    public void setEndAction(String endAction) {
+        this.endAction = endAction;
+    }
+
 }

@@ -16,6 +16,8 @@ public interface ProfileService {
 
     void updateProfile(Profile profile);
 
+    void cloneProfile(Profile profile);
+
     void deleteProfile(Profile profile);
 
     void addProfileDiffsToProfile(Profile profile, List<ProfileDiff> profileDiffs);

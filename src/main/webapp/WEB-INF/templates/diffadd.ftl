@@ -10,6 +10,16 @@
             <input name="name" id="name" cssClass="form-control" placeholder="Diff name"/>
             <errors path="name"/>
         </div>
+        <div class="form-group">
+            <label for="startaction">Start Action</label>
+            <input name="startaction" id="startaction" cssClass="form-control" placeholder="Start Action"/>
+            <errors path="startaction"/>
+        </div>
+        <div class="form-group">
+            <label for="endaction">End Action</label>
+            <input name="endaction" id="endaction" cssClass="form-control" placeholder="End Action"/>
+            <errors path="endaction"/>
+        </div>
         <button type="submit" class="btn btn-default">Submit</button>
     </form>
     <hr>

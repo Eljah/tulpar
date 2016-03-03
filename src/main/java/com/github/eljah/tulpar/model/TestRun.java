@@ -1,5 +1,6 @@
 package com.github.eljah.tulpar.model;
 
+import com.github.eljah.tulpar.model.metric.Data;
 import com.github.eljah.tulpar.model.metric.TestRunMetricResult;
 
 import javax.persistence.*;
@@ -29,6 +30,9 @@ public class TestRun {
 
     @OneToMany
     List<TestRunMetricResult> testRunMetricResults;
+
+    @OneToMany
+    List<Data> datas;
 
     public long getId() {
         return id;
@@ -68,5 +72,13 @@ public class TestRun {
 
     public void setTestRunMetricResults(List<TestRunMetricResult> testRunMetricResults) {
         this.testRunMetricResults = testRunMetricResults;
+    }
+
+    public List<Data> getDatas() {
+        return datas;
+    }
+
+    public void setDatas(List<Data> datas) {
+        this.datas = datas;
     }
 }
