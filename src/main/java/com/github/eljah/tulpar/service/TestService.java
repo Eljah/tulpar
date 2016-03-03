@@ -44,5 +44,18 @@ public interface TestService {
 
     public List<String> printProfileDiffs(Test t);
 
+    public List<String> printMetricsBeforeAction(Test t);
+
+    public List<String> printMetricsForStreamAction(Test t);
+
+    public List<String> printMetricsAfterAction(Test t);
+
+    public void pauseForDuration(Test t);
+
+    public void calculateTestRunResults(TestRun t);
+
+    public void calculateTestResults(Test t);
+
+
 
 }

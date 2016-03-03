@@ -1,6 +1,7 @@
 package com.github.eljah.tulpar.util;
 
 import com.github.eljah.tulpar.model.Test;
+import com.github.eljah.tulpar.model.TestRun;
 import com.github.eljah.tulpar.service.TestService;
 import com.github.eljah.tulpar.service.impl.TestServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,22 +61,27 @@ public class TestThread extends Thread {
                 Test t = (Test) q.pop();
                 if (t != null) {
                     testService.printProfileDiffs(t);
-
+                    testService.printMetricsForStreamAction(t);
                     //todo metrics setup for stream metrics
-                    //todo metrics before action
-                    testService.printProfileStartAction(t);
 
-                    //todo test runs loop; do test run metrics calculation
-                    //todo duration pause during each loop
-                    //to metrics last action if it is
-                    //todo calculate test metrics
-                    //todo
-                    testService.printProfileEndAction(t);
+                    for (TestRun tr : t.getTestRuns()) {
+                        testService.printMetricsBeforeAction(t);
+                        //todo metrics before action
+                        testService.printProfileStartAction(t);
+                        testService.pauseForDuration(t);
+                        //todo test runs loop; do test run metrics calculation
+                        //todo duration pause during each loop
+                        //to metrics last action if it is
+                        //todo calculate test metrics
+                        //todo
+                        testService.printProfileEndAction(t);
+                        testService.printMetricsAfterAction(t);
+                        testService.calculateTestRunResults(tr);
+                    }
+                    testService.calculateTestResults(t);
                     t.setExecuted(true);
                     testService.updateTest(t);
-                }
-                else
-                {
+                } else {
                     throw new RuntimeException("Surprisingly NULL Test came into queue");
                 }
             } else {

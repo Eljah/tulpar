@@ -12,16 +12,6 @@
             <errors path="name"/>
         </div>
         <div class="form-group">
-            <label for="startaction">Start Action</label>
-            <input name="startaction" id="startaction" cssClass="form-control" placeholder="Start Action"/>
-            <errors path="startaction"/>
-        </div>
-        <div class="form-group">
-            <label for="endaction">End Action</label>
-            <input name="endaction" id="endaction" cssClass="form-control" placeholder="End Action"/>
-            <errors path="endaction"/>
-        </div>
-        <div class="form-group">
             <label for="endaction">Run Duration</label>
             <input name="runduration" id="endaction" cssClass="form-control" placeholder="End Action"/>
             <errors path="endaction"/>

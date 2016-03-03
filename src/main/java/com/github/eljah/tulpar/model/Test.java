@@ -35,7 +35,7 @@ public class Test {
     @OneToMany
     List<TestMetricResult> testMetricResults;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     List<TestRun> testRuns;
 
     @Column

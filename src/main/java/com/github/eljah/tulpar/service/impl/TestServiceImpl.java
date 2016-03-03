@@ -2,6 +2,7 @@ package com.github.eljah.tulpar.service.impl;
 
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
+import com.github.eljah.tulpar.model.metric.Metric;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
 import com.github.eljah.tulpar.repository.TestRepository;
 import com.github.eljah.tulpar.repository.TestRunRepository;
@@ -98,18 +99,20 @@ public class TestServiceImpl implements TestService {
 
     }
 
-
     @Override
     public List<Test> getAll() {
         return testRepository.findAll();
     }
 
+    public Test getTest(Long id) {
+        return testRepository.findOne(id);
+    }
 
     public String printProfileStartAction(Test t) {
         String toReturn = null;
         if (t.getProfile().getStartAction() != null) {
             toReturn = t.getProfile().getStartAction();
-            System.out.println(toReturn);
+            System.out.println("StartAction: " + toReturn);
         }
         return toReturn;
     }
@@ -118,7 +121,7 @@ public class TestServiceImpl implements TestService {
         String toReturn = null;
         if (t.getProfile().getEndAction() != null) {
             toReturn = t.getProfile().getEndAction();
-            System.out.println(toReturn);
+            System.out.println("EndAction: " + toReturn);
         }
         return toReturn;
     }
@@ -129,14 +132,78 @@ public class TestServiceImpl implements TestService {
         if (t.getProfile().getProfileDiffs() != null) {
             for (ProfileDiff pd : t.getProfile().getProfileDiffs()) {
                 String toRet = pd.getAction();
-                System.out.println(toRet);
+                System.out.println("ProfileDiff: " + toRet);
                 toReturn.add(toRet);
             }
         }
         return toReturn;
     }
 
-    public Test getTest(Long id) {
-        return testRepository.findOne(id);
+    @Override
+    public List<String> printMetricsBeforeAction(Test t) {
+        List<String> toReturn = new LinkedList<String>() {
+        };
+        if (t.getProfile().getMetrics() != null) {
+            for (Metric pd : t.getProfile().getMetrics()) {
+                String toRet = pd.getBeforeAction();
+                System.out.println("MetricsBefore: " + toRet);
+                toReturn.add(toRet);
+            }
+        }
+        return toReturn;
     }
+
+    @Override
+    public List<String> printMetricsForStreamAction(Test t) {
+        List<String> toReturn = new LinkedList<String>() {
+        };
+        if (t.getProfile().getMetrics() != null) {
+            for (Metric pd : t.getProfile().getMetrics()) {
+                if (pd.getType().equals("0")) {
+                    String toRet = pd.getAnotherAction();
+                    System.out.println("MetricsStream: " + toRet);
+                    toReturn.add(toRet);
+                }
+            }
+        }
+        return toReturn;
+
+    }
+
+    @Override
+    public List<String> printMetricsAfterAction(Test t) {
+        List<String> toReturn = new LinkedList<String>() {
+        };
+        if (t.getProfile().getMetrics() != null) {
+            for (Metric pd : t.getProfile().getMetrics()) {
+                if (pd.getType().equals("1")) {
+                    String toRet = pd.getAnotherAction();
+                    System.out.println("MetricsAfter: " + toRet);
+                    toReturn.add(toRet);
+                }
+            }
+        }
+        return toReturn;
+    }
+
+    @Override
+    public void pauseForDuration(Test t) {
+        long DurationInMins = t.getDuration();
+        try {
+            Thread.sleep((DurationInMins * 1000 * 60));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void calculateTestRunResults(TestRun t) {
+        System.out.println("Calculating test run results");
+    }
+
+    @Override
+    public void calculateTestResults(Test t) {
+        System.out.println("Calculating test results");
+    }
+
 }
