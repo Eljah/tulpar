@@ -20,6 +20,9 @@
 <li>
     <a href="/profiles/diff/getAll">All profile diffs</a>
 </li>
+<li>
+    <a href="/tests/">Add and view tests</a>
+</li>
 
 </#macro>
 

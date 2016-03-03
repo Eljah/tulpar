@@ -48,7 +48,7 @@
 
     </#list>
 
-
+</div>
 </#macro>
 
 <@main title="Profiles list" customScripts=["resources/js/tweet.js"]/>

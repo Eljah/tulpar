@@ -1,6 +1,7 @@
 package com.github.eljah.tulpar.service.impl;
 
 import com.github.eljah.tulpar.model.Test;
+import com.github.eljah.tulpar.model.TestRun;
 import com.github.eljah.tulpar.repository.TestRepository;
 import com.github.eljah.tulpar.repository.TestRunRepository;
 import com.github.eljah.tulpar.service.TestService;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import sun.misc.Queue;
 
 import java.util.ArrayDeque;
+import java.util.List;
 
 /**
  * Created by ilya on 03.03.16.
@@ -41,6 +43,22 @@ testRepository.save(test);
     }
 
     @Override
+    public void addTestRun(TestRun test) {
+        testRunRepository.save(test);
+    }
+
+    @Override
+    public void updateTestRun(TestRun test) {
+        testRunRepository.save(test);
+    }
+
+    @Override
+    public void deleteTestRun(TestRun test) {
+        testRunRepository.delete(test);
+    }
+
+
+    @Override
     public void executeTest(Test test) {
 
     }
@@ -49,4 +67,11 @@ testRepository.save(test);
     public void putTestIntoQueue(Test test) {
 
     }
+
+    @Override
+    public List<Test> getAll() {
+        return testRepository.findAll();
+    }
+
+
 }
