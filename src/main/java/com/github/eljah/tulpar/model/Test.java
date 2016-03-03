@@ -38,6 +38,12 @@ public class Test {
     @OneToMany
     List<TestRun> testRuns;
 
+    @Column
+    Boolean executed=false;
+
+    @Column
+    Boolean planned=false;
+
     public long getId() {
         return id;
     }
@@ -92,5 +98,21 @@ public class Test {
 
     public void setTestMetricResults(List<TestMetricResult> testMetricResults) {
         this.testMetricResults = testMetricResults;
+    }
+
+    public Boolean getExecuted() {
+        return executed;
+    }
+
+    public void setExecuted(Boolean executed) {
+        this.executed = executed;
+    }
+
+    public Boolean getPlanned() {
+        return planned;
+    }
+
+    public void setPlanned(Boolean planned) {
+        this.planned = planned;
     }
 }

@@ -53,6 +53,13 @@
         </#list>//<#list test.profile.metrics as metric>
         ${metric.name+((metric.type=="1")?string("*", ""))}
         </#list></p>
+        <p>Planned:  ${(test.planned)?string("yes", "no")}</p>
+        <p>Executed: ${(test.executed)?string("yes", "no")}</p>
+        <form id="${test.id}_pull" method="get" action="/tests/${test.id}/pull">
+            <#if !test.planned><button type="submit" class="btn btn-default">Pull</button></#if>
+            <#if test.executed>Executed</#if>
+        </form>
+
         <hr>
     </#list>
 </#macro>

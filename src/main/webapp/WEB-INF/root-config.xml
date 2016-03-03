@@ -8,6 +8,7 @@
 
     <context:component-scan base-package="com.github.eljah.tulpar.service"/>
     <context:component-scan base-package="com.github.eljah.tulpar.model"/>
+    <context:component-scan base-package="com.github.eljah.tulpar.util"/>
 
     <import resource="persistence-config.xml"/>
     <import resource="security-config.xml"/>

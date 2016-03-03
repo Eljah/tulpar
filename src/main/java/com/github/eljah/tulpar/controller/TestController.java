@@ -67,4 +67,15 @@ public class TestController {
 
         return "tests-list";
     }
+
+    @RequestMapping("/tests/{testid}/pull")
+    @ResponseStatus(HttpStatus.OK)
+    public String addPullTestToQueue(@PathVariable("testid") String testid, Model model) {
+        //User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Test test=testService.getTest(Long.parseLong(testid));
+        test.setPlanned(true);
+        testService.putTestIntoQueue(test);
+        testService.updateTest(test);
+        return "redirect:/tests";
+    }
 }

@@ -5,12 +5,15 @@ import com.github.eljah.tulpar.model.TestRun;
 import com.github.eljah.tulpar.model.profile.Profile;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by ilya on 03.03.16.
  */
 public interface TestService {
+    Test getTest(Long id);
+
     void addTest(Test test);
 
     void updateTest(Test test);
@@ -27,8 +30,19 @@ public interface TestService {
 
     void putTestIntoQueue(Test test);
 
+    void startTestQueue();
 
+    void pauseTestQueue();
+
+    void resetTestQueue();
 
     List<Test> getAll();
+
+    public String printProfileStartAction(Test t);
+
+    public String printProfileEndAction(Test t);
+
+    public List<String> printProfileDiffs(Test t);
+
 
 }
