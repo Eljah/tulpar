@@ -22,5 +22,4 @@ public interface MetricRepository  extends JpaRepository<Metric, Long> {
 
     Metric findByName(String name);
 
-
 }
