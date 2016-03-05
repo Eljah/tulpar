@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ilya on 03.03.16.
@@ -41,9 +43,8 @@ public class TestController {
         test.setProfile(profile);
         test.setDuration(Long.parseLong(runduration));
         Integer numberOfRuns=Integer.parseInt(numberofruns);
-        List<TestRun> testRunList=new LinkedList<TestRun>(){};
+        Set<TestRun> testRunList=new HashSet<TestRun>(){};
         test.setTestRuns(testRunList);
-        //testService.addTest(test);
         for (int i=0; i<numberOfRuns; i++)
         {
             TestRun tr=new TestRun();
@@ -51,16 +52,18 @@ public class TestController {
             testRunList.add(tr);
             testService.addTestRun(tr);
         }
-
-        //test.setTestRuns(testRunList);
         testService.updateTest(test);
-
-        test=testService.getTest(test.getId());
-
-
-
         return "redirect:/tests";
     }
+
+    @RequestMapping("tests/{testid}/clone")
+    @ResponseStatus(HttpStatus.OK)
+    public String cloneTest(@PathVariable("testid") String testid) {
+        //User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+       testService.cloneTest(testService.getTest(Long.parseLong(testid)));
+       return "redirect:/tests";
+    }
+
 
     @RequestMapping("/tests")
     @ResponseStatus(HttpStatus.OK)

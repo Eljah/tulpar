@@ -20,6 +20,8 @@ public interface TestService {
 
     void deleteTest(Test test);
 
+    void cloneTest(Test test);
+
     void addTestRun(TestRun test);
 
     void updateTestRun(TestRun test);
@@ -57,6 +59,8 @@ public interface TestService {
     public void calculateTestResults(Test t);
 
     public void setCurrentTestRun(TestRun tr);
+
+    public void removeCurrentTestRun();
 
     public TestRun getCurrentTestRun();
 

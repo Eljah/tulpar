@@ -7,6 +7,7 @@ import com.github.eljah.tulpar.model.profile.Profile;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ilya on 29.02.16.
@@ -36,7 +37,7 @@ public class Test {
     List<TestMetricResult> testMetricResults;
 
     @OneToMany(fetch = FetchType.EAGER)
-    List<TestRun> testRuns;
+    Set<TestRun> testRuns;
 
     @Column
     Boolean executed=false;
@@ -76,11 +77,11 @@ public class Test {
         this.dateStarted = dateStarted;
     }
 
-    public List<TestRun> getTestRuns() {
+    public Set<TestRun> getTestRuns() {
         return testRuns;
     }
 
-    public void setTestRuns(List<TestRun> testRuns) {
+    public void setTestRuns(Set<TestRun> testRuns) {
         this.testRuns = testRuns;
     }
 

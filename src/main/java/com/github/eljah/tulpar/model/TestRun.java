@@ -6,6 +6,7 @@ import com.github.eljah.tulpar.model.metric.TestRunMetricResult;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ilya on 29.02.16.
@@ -31,8 +32,8 @@ public class TestRun {
     @OneToMany
     List<TestRunMetricResult> testRunMetricResults;
 
-    @OneToMany
-    List<Data> datas;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testRun")
+    Set<Data> datas;
 
     public long getId() {
         return id;
@@ -74,11 +75,16 @@ public class TestRun {
         this.testRunMetricResults = testRunMetricResults;
     }
 
-    public List<Data> getDatas() {
+    public Set<Data> getDatas() {
         return datas;
     }
 
-    public void setDatas(List<Data> datas) {
+    public void setDatas(Set<Data> datas) {
         this.datas = datas;
     }
+
+    //public void addData(Data data)
+    //{
+    //    this.datas.add(data);
+    //}
 }

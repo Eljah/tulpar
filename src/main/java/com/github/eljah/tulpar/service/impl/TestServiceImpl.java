@@ -2,7 +2,9 @@ package com.github.eljah.tulpar.service.impl;
 
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
+import com.github.eljah.tulpar.model.metric.Data;
 import com.github.eljah.tulpar.model.metric.Metric;
+import com.github.eljah.tulpar.model.metric.TestRunMetricResult;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
 import com.github.eljah.tulpar.repository.TestRepository;
 import com.github.eljah.tulpar.repository.TestRunRepository;
@@ -13,9 +15,7 @@ import org.springframework.stereotype.Service;
 import sun.misc.Queue;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayDeque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by ilya on 03.03.16.
@@ -23,7 +23,7 @@ import java.util.List;
 
 @Service
 public class TestServiceImpl implements TestService {
-    static TestRun currentTest=null;
+    static TestRun currentTest = null;
 
     @Autowired
     TestRepository testRepository;
@@ -52,6 +52,25 @@ public class TestServiceImpl implements TestService {
     public void updateTest(Test test) {
         testRepository.save(test);
     }
+
+    @Override
+    public void cloneTest(Test test) {
+        Test cloned = new Test();
+        cloned.setProfile(test.getProfile());
+        cloned.setDuration(test.getDuration());
+        Set<TestRun> testRunList = new HashSet<TestRun>() {
+        };
+        cloned.setTestRuns(testRunList);
+        for (int i = 0; i < test.getTestRuns().size(); i++) {
+            TestRun tr = new TestRun();
+            //tr.setTest(test);
+            testRunList.add(tr);
+            addTestRun(tr);
+        }
+        updateTest(cloned);
+
+    }
+
 
     @Override
     public void deleteTest(Test test) {
@@ -198,7 +217,46 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public void calculateTestRunResults(TestRun t) {
+
         System.out.println("Calculating test run results");
+
+        List<TestRunMetricResult> results = new LinkedList<TestRunMetricResult>();
+        List<Metric> metrics = new LinkedList<Metric>();
+
+        //obtaining all collcted Metrics todo both types stram for now only
+        for (Data d : t.getDatas()) {
+            Metric m = d.getMetric();
+            if (!metrics.contains(m)) {
+                System.out.print("New metric is fount: " + m);
+                metrics.add(m);
+                TestRunMetricResult trmr = new TestRunMetricResult();
+                trmr.setMetric(m);
+                results.add(trmr);
+            }
+        }
+
+        for (TestRunMetricResult testRunMetricResult : results) {
+
+            int counter = 0;
+            long averager = 0;
+            Data lowestData=null;
+            Data highestData=null;
+            long highest = 0;
+            long lowest =  Long.MAX_VALUE;
+
+            for (Data d : t.getDatas()) {
+                if (d.getMetric().equals(testRunMetricResult.getMetric())) {
+                    counter++;
+                    averager = averager + d.getValue();
+                    if (d.getValue()<lowest) {lowest=d.getValue(); lowestData=d;}
+                    if (d.getValue()>highest) {highest=d.getValue(); highestData=d;}
+                }
+            }
+            testRunMetricResult.setAverage(averager/counter);
+            testRunMetricResult.setMax(highestData);
+            testRunMetricResult.setMax(lowestData);
+        }
+
     }
 
     @Override
@@ -207,13 +265,21 @@ public class TestServiceImpl implements TestService {
     }
 
 
-    public void setCurrentTestRun(TestRun tr)
-    {
-        currentTest=tr;
+    public void setCurrentTestRun(TestRun tr) {
+        System.out.println("Setting to current testRun " + tr.toString());
+        currentTest = tr;
     }
 
-    public TestRun getCurrentTestRun()
-    {
+
+    public void removeCurrentTestRun() {
+        System.out.println("Removing current testRun " + currentTest.toString());
+        for (Data d : currentTest.getDatas()) {
+            System.out.println(d.getDate() + " " + d.getValue());
+        }
+        currentTest = null;
+    }
+
+    public TestRun getCurrentTestRun() {
         return currentTest;
     }
 

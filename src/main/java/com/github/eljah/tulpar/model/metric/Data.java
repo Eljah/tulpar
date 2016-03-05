@@ -17,6 +17,7 @@ public class Data {
     @ManyToOne
     Metric metric;
 
+    @JoinColumn(name = "test_ru_id")
     @ManyToOne
     TestRun testRun;
 

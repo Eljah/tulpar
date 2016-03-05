@@ -78,7 +78,8 @@ public class TestThread extends Thread {
                         //todo
                         testService.printProfileEndAction(t);
                         testService.printMetricsAfterAction(t);
-                        testService.setCurrentTestRun(null);
+                        testService.updateTestRun(testService.getCurrentTestRun());
+                        testService.removeCurrentTestRun();
                         testService.calculateTestRunResults(tr);
                     }
                     testService.calculateTestResults(t);

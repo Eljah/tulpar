@@ -47,9 +47,12 @@
         <p>Executed: ${(test.executed)?string("yes", "no")}</p>
         <form id="${test.id}_pull" method="get" action="/tests/${test.id}/pull">
             <#if !test.planned><button type="submit" class="btn btn-default">Pull</button></#if>
-            <#if test.executed>Executed</#if>
+            <#if test.executed>Executed;</#if>
+             </form>
+        <p><#if test.testRuns??><#list test.testRuns as testrun><#list testrun.datas as data>${data.date}: ${data.value}</#list></#list></#if></p>
+        <form id="${test.id}_clone" method="get" action="/tests/${test.id}/clone">
+            <button type="submit" class="btn btn-default">Clone</button>
         </form>
-
         <hr>
     </#list>
 </#macro>
