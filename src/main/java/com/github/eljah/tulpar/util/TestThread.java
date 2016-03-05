@@ -65,10 +65,12 @@ public class TestThread extends Thread {
                     //todo metrics setup for stream metrics
 
                     for (TestRun tr : t.getTestRuns()) {
+                        testService.setCurrentTestRun(tr);
                         testService.printMetricsBeforeAction(t);
                         //todo metrics before action
                         testService.printProfileStartAction(t);
                         testService.pauseForDuration(t);
+
                         //todo test runs loop; do test run metrics calculation
                         //todo duration pause during each loop
                         //to metrics last action if it is
@@ -76,6 +78,7 @@ public class TestThread extends Thread {
                         //todo
                         testService.printProfileEndAction(t);
                         testService.printMetricsAfterAction(t);
+                        testService.setCurrentTestRun(null);
                         testService.calculateTestRunResults(tr);
                     }
                     testService.calculateTestResults(t);

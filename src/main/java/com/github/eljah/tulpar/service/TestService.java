@@ -56,6 +56,8 @@ public interface TestService {
 
     public void calculateTestResults(Test t);
 
+    public void setCurrentTestRun(TestRun tr);
 
+    public TestRun getCurrentTestRun();
 
 }

@@ -7,6 +7,7 @@ import com.github.eljah.tulpar.model.profile.Profile;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ilya on 29.02.16.
@@ -28,8 +29,8 @@ public abstract class Metric {
 
     String anotherAction;
 
-    @ManyToMany
-    List<Profile> profiles;
+    @ManyToMany(mappedBy = "metrics")
+    Set<Profile> profiles;
 
     public void setName(String name)
     {
@@ -76,11 +77,11 @@ public abstract class Metric {
         this.anotherAction = anotherAction;
     }
 
-    public List<Profile> getProfiles() {
+    public Set<Profile> getProfiles() {
         return profiles;
     }
 
-    public void setProfiles(List<Profile> profiles) {
+    public void setProfiles(Set<Profile> profiles) {
         this.profiles = profiles;
     }
 

@@ -5,6 +5,7 @@ import com.github.eljah.tulpar.model.metric.Metric;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ilya on 29.02.16.
@@ -16,10 +17,12 @@ public class Profile {
     private long id;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<ProfileDiff> profileDiffs;
+    @JoinColumn(name = "profile_diff_id")
+    private Set<ProfileDiff> profileDiffs;
 
+    @JoinColumn(name = "metric_id")
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Metric> metrics;
+    private Set<Metric> metrics;
 
     @OneToMany
     private List<Test> tests;
@@ -40,11 +43,11 @@ public class Profile {
         this.id = id;
     }
 
-    public List<ProfileDiff> getProfileDiffs() {
+    public Set<ProfileDiff> getProfileDiffs() {
         return profileDiffs;
     }
 
-    public void setProfileDiffs(List<ProfileDiff> profileDiffs) {
+    public void setProfileDiffs(Set<ProfileDiff> profileDiffs) {
         this.profileDiffs = profileDiffs;
     }
 
@@ -64,11 +67,11 @@ public class Profile {
         this.name = name;
     }
 
-    public List<Metric> getMetrics() {
+    public Set<Metric> getMetrics() {
         return metrics;
     }
 
-    public void setMetrics(List<Metric> metrics) {
+    public void setMetrics(Set<Metric> metrics) {
         this.metrics = metrics;
     }
 

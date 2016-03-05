@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by ilya on 29.02.16.
@@ -30,12 +31,12 @@ public abstract class ProfileDiff {
     @Column(name="type", insertable = false, updatable = false)
     private String type;
 
-    public List<Profile> getProfiles() {
+    public Set<Profile> getProfiles() {
         return profiles;
     }
 
-    @ManyToMany
-    private List<Profile> profiles;
+    @ManyToMany(mappedBy = "profileDiffs")
+    private Set<Profile> profiles;
 
 
     public abstract void setName(String description);
@@ -51,7 +52,7 @@ public abstract class ProfileDiff {
 
     public abstract String getAction();
 
-    public void setProfiles(List<Profile> profiles) {
+    public void setProfiles(Set<Profile> profiles) {
         this.profiles = profiles;
     }
 

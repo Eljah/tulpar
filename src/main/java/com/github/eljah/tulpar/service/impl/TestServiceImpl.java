@@ -23,7 +23,7 @@ import java.util.List;
 
 @Service
 public class TestServiceImpl implements TestService {
-
+    static TestRun currentTest=null;
 
     @Autowired
     TestRepository testRepository;
@@ -205,5 +205,17 @@ public class TestServiceImpl implements TestService {
     public void calculateTestResults(Test t) {
         System.out.println("Calculating test results");
     }
+
+
+    public void setCurrentTestRun(TestRun tr)
+    {
+        currentTest=tr;
+    }
+
+    public TestRun getCurrentTestRun()
+    {
+        return currentTest;
+    }
+
 
 }

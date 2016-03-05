@@ -23,6 +23,7 @@ import java.util.List;
 
 @Controller
 public class TestController {
+
     @Autowired
     TestService testService;
 
@@ -42,14 +43,21 @@ public class TestController {
         Integer numberOfRuns=Integer.parseInt(numberofruns);
         List<TestRun> testRunList=new LinkedList<TestRun>(){};
         test.setTestRuns(testRunList);
+        //testService.addTest(test);
         for (int i=0; i<numberOfRuns; i++)
         {
             TestRun tr=new TestRun();
+            //tr.setTest(test);
+            testRunList.add(tr);
             testService.addTestRun(tr);
-            test.getTestRuns().add(tr);
         }
 
-        testService.addTest(test);
+        //test.setTestRuns(testRunList);
+        testService.updateTest(test);
+
+        test=testService.getTest(test.getId());
+
+
 
         return "redirect:/tests";
     }
@@ -78,4 +86,5 @@ public class TestController {
         testService.updateTest(test);
         return "redirect:/tests";
     }
+
 }

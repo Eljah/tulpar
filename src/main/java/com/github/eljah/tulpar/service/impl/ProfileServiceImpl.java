@@ -10,8 +10,10 @@ import com.github.eljah.tulpar.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ilya on 01.03.16.
@@ -46,12 +48,12 @@ public class ProfileServiceImpl implements ProfileService {
         copy.setName("Copy_of_"+profile.getName());
         copy.setStartAction(profile.getStartAction());
         copy.setEndAction(profile.getEndAction());
-        List<ProfileDiff> lpd=profile.getProfileDiffs();
-        List<ProfileDiff> lpde=new LinkedList<>();
+        Set<ProfileDiff> lpd=profile.getProfileDiffs();
+        Set<ProfileDiff> lpde=new HashSet<>();
         copy.setProfileDiffs(lpde);
         copy.getProfileDiffs().addAll(lpd);
-        List<Metric> lm=profile.getMetrics();
-        List<Metric> lme=new LinkedList<>();
+        Set<Metric> lm=profile.getMetrics();
+        Set<Metric> lme=new HashSet<>();
         copy.setMetrics(lme);
         copy.getMetrics().addAll(lm);
         profileRepository.save(copy);
