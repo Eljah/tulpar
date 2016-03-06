@@ -2,6 +2,7 @@ package com.github.eljah.tulpar.service;
 
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
+import com.github.eljah.tulpar.model.metric.Result;
 import com.github.eljah.tulpar.model.profile.Profile;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
 
@@ -55,6 +56,8 @@ public interface TestService {
     public void pauseForDuration(Test t);
 
     public void calculateTestRunResults(TestRun t);
+
+    public List<Result> getTestRunResults(TestRun t);
 
     public void calculateTestResults(Test t);
 

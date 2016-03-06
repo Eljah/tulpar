@@ -3,6 +3,7 @@ package com.github.eljah.tulpar.controller;
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
 import com.github.eljah.tulpar.model.metric.Data;
+import com.github.eljah.tulpar.model.metric.Metric;
 import com.github.eljah.tulpar.model.profile.Profile;
 import com.github.eljah.tulpar.service.DataService;
 import com.github.eljah.tulpar.service.MetricService;
@@ -41,18 +42,21 @@ public class DataController {
     public void addTest(@PathVariable("metric") String metric, @PathVariable("value") String value) {
         Data data = new Data();
         data.setDate(new Date());
-        data.setMetric(metricService.get(metric));
-        data.setValue(Long.parseLong(value));
-        TestRun current=testService.getCurrentTestRun();
-        if (current!=null) {
-            data.setTestRun(current);
-            dataService.addData(data);
-            Set<Data> datas=current.getDatas();
-            datas.add(data);
+        Metric m = metricService.get(metric);
+        if (m != null) {
+            data.setMetric(m);
+            data.setValue(Long.parseLong(value));
+            TestRun current = testService.getCurrentTestRun();
+            if (current != null) {
+                data.setTestRun(current);
+                dataService.addData(data);
+                Set<Data> datas = current.getDatas();
+                datas.add(data);
 //            current.getDatas().clear();
-            current.setDatas(datas);
-            //current.addData(data);
-            testService.updateTestRun(current);
+                current.setDatas(datas);
+                //current.addData(data);
+                testService.updateTestRun(current);
+            }
         }
     }
 }

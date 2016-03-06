@@ -7,6 +7,7 @@ import com.github.eljah.tulpar.model.profile.Profile;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -94,6 +95,12 @@ public abstract class Metric {
     public String toString()
     {
         return (this.name);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return this.toString().equals(o.toString());
     }
 
 

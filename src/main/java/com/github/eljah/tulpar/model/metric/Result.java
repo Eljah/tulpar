@@ -1,5 +1,7 @@
 package com.github.eljah.tulpar.model.metric;
 
+import com.github.eljah.tulpar.model.TestRun;
+
 import javax.persistence.*;
 
 /**
@@ -19,10 +21,15 @@ public abstract class Result {
 
     Long average;
 
+    Long averageDelta;
+
     @OneToOne
     Data max;
     @OneToOne
     Data min;
+
+    @ManyToOne
+    TestRun testRun;
 
     public long getId() {
         return id;
@@ -62,5 +69,13 @@ public abstract class Result {
 
     public void setMin(Data min) {
         this.min = min;
+    }
+
+    public Long getAverageDelta() {
+        return averageDelta;
+    }
+
+    public void setAverageDelta(Long averageDelta) {
+        this.averageDelta = averageDelta;
     }
 }

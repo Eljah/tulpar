@@ -29,7 +29,7 @@ public class TestRun {
     @Column
     Date dateEnded;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     List<TestRunMetricResult> testRunMetricResults;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testRun")

@@ -49,7 +49,7 @@
             <#if !test.planned><button type="submit" class="btn btn-default">Pull</button></#if>
             <#if test.executed>Executed;</#if>
              </form>
-        <p><#if test.testRuns??><#list test.testRuns as testrun><#list testrun.datas as data>${data.date}: ${data.value}</#list></#list></#if></p>
+        <p><#if test.testRuns??><#list test.testRuns as testrun><#list testrun.testRunMetricResults as testRunMetricResult>Average: ${testRunMetricResult.average}<br>Average Delta: ${testRunMetricResult.averageDelta}<#if testRunMetricResult.max??><br>Max: ${testRunMetricResult.max.value}<br>Min: ${testRunMetricResult.min.value}</#if></#list></#list></#if></p>
         <form id="${test.id}_clone" method="get" action="/tests/${test.id}/clone">
             <button type="submit" class="btn btn-default">Clone</button>
         </form>

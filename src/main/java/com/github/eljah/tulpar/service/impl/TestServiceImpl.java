@@ -4,8 +4,10 @@ import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
 import com.github.eljah.tulpar.model.metric.Data;
 import com.github.eljah.tulpar.model.metric.Metric;
+import com.github.eljah.tulpar.model.metric.Result;
 import com.github.eljah.tulpar.model.metric.TestRunMetricResult;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
+import com.github.eljah.tulpar.repository.ResultRepository;
 import com.github.eljah.tulpar.repository.TestRepository;
 import com.github.eljah.tulpar.repository.TestRunRepository;
 import com.github.eljah.tulpar.service.TestService;
@@ -30,6 +32,9 @@ public class TestServiceImpl implements TestService {
 
     @Autowired
     TestRunRepository testRunRepository;
+
+    @Autowired
+    ResultRepository resultRepository;
 
     static ArrayDeque<Test> testQueue = new ArrayDeque<Test>();
 
@@ -227,7 +232,7 @@ public class TestServiceImpl implements TestService {
         for (Data d : t.getDatas()) {
             Metric m = d.getMetric();
             if (!metrics.contains(m)) {
-                System.out.print("New metric is fount: " + m);
+                System.out.println("New metric is fount: " + m);
                 metrics.add(m);
                 TestRunMetricResult trmr = new TestRunMetricResult();
                 trmr.setMetric(m);
@@ -239,25 +244,60 @@ public class TestServiceImpl implements TestService {
 
             int counter = 0;
             long averager = 0;
-            Data lowestData=null;
-            Data highestData=null;
-            long highest = 0;
-            long lowest =  Long.MAX_VALUE;
+            long delter = 0;
+            long lastValue = 0;
+            Data lowestData = null;
+            Data highestData = null;
+            long highest = Long.MIN_VALUE;
+            long lowest = Long.MAX_VALUE;
 
             for (Data d : t.getDatas()) {
                 if (d.getMetric().equals(testRunMetricResult.getMetric())) {
                     counter++;
                     averager = averager + d.getValue();
-                    if (d.getValue()<lowest) {lowest=d.getValue(); lowestData=d;}
-                    if (d.getValue()>highest) {highest=d.getValue(); highestData=d;}
+                    if (counter > 0) {
+                        delter = delter + (d.getValue() - lastValue);
+                    }
+                    lastValue = d.getValue();
+                    if (d.getValue() < lowest) {
+                        lowest = d.getValue();
+                        lowestData = d;
+                    }
+                    if (d.getValue() > highest) {
+                        highest = d.getValue();
+                        highestData = d;
+                    }
                 }
             }
-            testRunMetricResult.setAverage(averager/counter);
-            testRunMetricResult.setMax(highestData);
-            testRunMetricResult.setMax(lowestData);
-        }
 
+            if (counter > 0) {
+                testRunMetricResult.setAverage(averager / counter);
+            } else {
+                testRunMetricResult.setAverage(0l);
+            }
+            if (counter > 1) {
+                testRunMetricResult.setAverageDelta(delter / (counter - 1));
+            } else {
+                testRunMetricResult.setAverageDelta(0l);
+            }
+            testRunMetricResult.setMax(highestData);
+            testRunMetricResult.setMin(lowestData);
+            resultRepository.save(testRunMetricResult);
+
+            System.out.println("Calculated for metric: " + testRunMetricResult);
+
+        }
+        List<TestRunMetricResult> testRunMetricResultList= t.getTestRunMetricResults();
+        testRunMetricResultList.addAll(results);
+        t.setTestRunMetricResults(testRunMetricResultList);
+        updateTestRun(t);
     }
+
+    public List<Result> getTestRunResults(TestRun t
+    ) {
+        return resultRepository.findByTestRun(t);
+    };
+
 
     @Override
     public void calculateTestResults(Test t) {
