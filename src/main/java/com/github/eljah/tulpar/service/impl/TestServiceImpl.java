@@ -4,10 +4,7 @@ import com.github.eljah.tulpar.annotation.LocalShell;
 import com.github.eljah.tulpar.annotation.TestHttpRequest;
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
-import com.github.eljah.tulpar.model.metric.Data;
-import com.github.eljah.tulpar.model.metric.Metric;
-import com.github.eljah.tulpar.model.metric.Result;
-import com.github.eljah.tulpar.model.metric.TestRunMetricResult;
+import com.github.eljah.tulpar.model.metric.*;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
 import com.github.eljah.tulpar.repository.ResultRepository;
 import com.github.eljah.tulpar.repository.TestRepository;
@@ -266,6 +263,7 @@ public class TestServiceImpl implements TestService {
 
             int counter = 0;
             long averager = 0;
+            long averagerSq = 0;
             long delter = 0;
             long lastValue = 0;
             Data lowestData = null;
@@ -275,11 +273,13 @@ public class TestServiceImpl implements TestService {
 
             for (Data d : t.getDatas()) {
                 if (d.getMetric().equals(testRunMetricResult.getMetric())) {
-                    counter++;
                     averager = averager + d.getValue();
+                    averagerSq = averagerSq + d.getValue() * d.getValue();
+
                     if (counter > 0) {
                         delter = delter + (d.getValue() - lastValue);
                     }
+                    counter++;
                     lastValue = d.getValue();
                     if (d.getValue() < lowest) {
                         lowest = d.getValue();
@@ -294,8 +294,10 @@ public class TestServiceImpl implements TestService {
 
             if (counter > 0) {
                 testRunMetricResult.setAverage(averager / counter);
+                testRunMetricResult.setDispersion((averagerSq / counter) - (averager / counter) * (averager / counter));
             } else {
                 testRunMetricResult.setAverage(0l);
+                testRunMetricResult.setDispersion(0l);
             }
             if (counter > 1) {
                 testRunMetricResult.setAverageDelta(delter / (counter - 1));
@@ -309,7 +311,7 @@ public class TestServiceImpl implements TestService {
             System.out.println("Calculated for metric: " + testRunMetricResult);
 
         }
-        List<TestRunMetricResult> testRunMetricResultList= t.getTestRunMetricResults();
+        List<TestRunMetricResult> testRunMetricResultList = t.getTestRunMetricResults();
         testRunMetricResultList.addAll(results);
         t.setTestRunMetricResults(testRunMetricResultList);
         updateTestRun(t);
@@ -318,12 +320,91 @@ public class TestServiceImpl implements TestService {
     public List<Result> getTestRunResults(TestRun t
     ) {
         return resultRepository.findByTestRun(t);
-    };
+    }
+
+    ;
 
 
     @Override
     public void calculateTestResults(Test t) {
         System.out.println("Calculating test results");
+
+        List<TestMetricResult> results = new LinkedList<TestMetricResult>();
+        List<Metric> metrics = new LinkedList<Metric>();
+
+        //obtaining all collcted Metrics todo both types stram for now only
+        for (TestRun tr : t.getTestRuns()) {
+            List<TestRunMetricResult> m = tr.getTestRunMetricResults();
+            for (TestRunMetricResult trmr : m) {
+                if (!metrics.contains(trmr.getMetric())) {
+                    System.out.println("New metric is fount: " + trmr.getMetric().getName());
+                    metrics.add(trmr.getMetric());
+                    TestMetricResult tmr = new TestMetricResult();
+                    trmr.setMetric(trmr.getMetric());
+                    results.add(tmr);
+                }
+            }
+        }
+
+        results.clear(); //todo >.<
+
+        for (Metric m : metrics) {
+
+            int counter = 0;
+            long averager = 0;
+            long averagerSq = 0;
+            long delter = 0;
+            long lastMaxValue = 0;
+            long lastMinValue = 0;
+            Data lowestData = null;
+            Data highestData = null;
+            long highest = Long.MIN_VALUE;
+            long lowest = Long.MAX_VALUE;
+
+            TestMetricResult tmr = new TestMetricResult();
+            tmr.setMetric(m);
+            for (TestRun tr : t.getTestRuns()) {
+                for (TestRunMetricResult testRunMetricResult : tr.getTestRunMetricResults()) {
+                    {
+                        if (m.equals(testRunMetricResult.getMetric())) {
+                            averagerSq = averagerSq + (testRunMetricResult.getAverage()) * (testRunMetricResult.getAverage());
+                            averager = averager + testRunMetricResult.getAverage();
+                            delter = delter + testRunMetricResult.getAverageDelta();
+                            counter++;
+                            lastMaxValue = testRunMetricResult.getMax().getValue();
+                            lastMinValue = testRunMetricResult.getMin().getValue();
+
+                            if (lastMinValue < lowest) {
+                                lowest = lastMinValue;
+                                lowestData = testRunMetricResult.getMin();
+                            }
+                            if (lastMaxValue > highest) {
+                                highest = lastMaxValue;
+                                highestData = testRunMetricResult.getMax();
+                            }
+                        }
+                    }
+                }
+            }
+            if (counter > 0) {
+                tmr.setAverage(averager / counter);
+                tmr.setAverageDelta(delter / (counter));
+                tmr.setDispersion((averagerSq / counter) - (averager / counter) * (averager / counter));
+            } else {
+                tmr.setAverage(0l);
+                tmr.setAverageDelta(0l);
+                tmr.setDispersion(0l);
+            }
+            tmr.setMax(highestData);
+            tmr.setMin(lowestData);
+            resultRepository.save(tmr);
+            results.add(tmr);
+            System.out.println("Calculated for metric: " + tmr.getMetric());
+        }
+        List<TestMetricResult> testMetricResultList = t.getTestMetricResults();
+        testMetricResultList.addAll(results);
+        t.setTestMetricResults(testMetricResultList);
+        updateTest(t);
     }
 
 

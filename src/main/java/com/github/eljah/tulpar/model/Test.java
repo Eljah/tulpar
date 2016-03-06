@@ -33,7 +33,7 @@ public class Test {
     @Column
     Date dateEnded;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     List<TestMetricResult> testMetricResults;
 
     @OneToMany(fetch = FetchType.EAGER)

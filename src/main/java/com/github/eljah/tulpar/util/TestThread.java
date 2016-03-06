@@ -84,9 +84,9 @@ public class TestThread extends Thread {
                         testService.removeCurrentTestRun();
                         testService.calculateTestRunResults(tr);
                     }
-                    testService.calculateTestResults(t);
                     t.setExecuted(true);
-                    testService.updateTest(t);
+                    testService.calculateTestResults(t);
+                    //testService.updateTest(t);
                 } else {
                     throw new RuntimeException("Surprisingly NULL Test came into queue");
                 }

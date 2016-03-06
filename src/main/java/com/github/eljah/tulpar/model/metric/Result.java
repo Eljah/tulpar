@@ -23,6 +23,8 @@ public abstract class Result {
 
     Long averageDelta;
 
+    Long dispersion;
+
     @OneToOne
     Data max;
     @OneToOne
@@ -77,5 +79,21 @@ public abstract class Result {
 
     public void setAverageDelta(Long averageDelta) {
         this.averageDelta = averageDelta;
+    }
+
+    public Long getDispersion() {
+        return dispersion;
+    }
+
+    public void setDispersion(Long dispersion) {
+        this.dispersion = dispersion;
+    }
+
+    public TestRun getTestRun() {
+        return testRun;
+    }
+
+    public void setTestRun(TestRun testRun) {
+        this.testRun = testRun;
     }
 }
