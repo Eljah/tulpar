@@ -8,19 +8,21 @@
         <aop:pointcut id="serviceInvoked" expression="execution(* com.github.eljah.tulpar.service.*.*(..))"/>
         <aop:pointcut id="prepareJsch" expression="@annotation(com.github.eljah.tulpar.annotation.RemoteShell)"/>
         <aop:pointcut id="prepareShell" expression="@annotation(com.github.eljah.tulpar.annotation.LocalShell)"/>
-        <aop:aspect ref="serviceAspect">
-            <!--<aop:before method="before" pointcut-ref="serviceInvoked"/>-->
+        <aop:pointcut id="prepareHttp" expression="@annotation(com.github.eljah.tulpar.annotation.TestHttpRequest)"/>
+        <!--<aop:aspect ref="serviceAspect">
+            <aop:before method="before" pointcut-ref="serviceInvoked"/>
            <aop:around method="retry" pointcut-ref="retry"/>
           <aop:around method="log" pointcut-ref="serviceInvoked"/>
-       </aop:aspect>
+       </aop:aspect>-->
         <aop:aspect ref="jschAspect">
             <!--<aop:before method="before" pointcut-ref="serviceInvoked"/>-->
             <aop:around method="callRemoteShell" pointcut-ref="prepareJsch"/>
             <aop:around method="callLocalShell" pointcut-ref="prepareShell"/>
+            <aop:around method="callHttpRequest" pointcut-ref="prepareHttp"/>
         </aop:aspect>
     </aop:config>
 
-    <bean id="serviceAspect" class="com.github.eljah.tulpar.aop.ServiceAspect"/>
+    <!--<bean id="serviceAspect" class="com.github.eljah.tulpar.aop.ServiceAspect"/>-->
 
     <bean id="jschAspect" class="com.github.eljah.tulpar.aop.ShellExecutionAspect">
         <property name="host" value="192.168.0.2"/>

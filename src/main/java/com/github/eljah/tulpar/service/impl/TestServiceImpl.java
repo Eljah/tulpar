@@ -1,5 +1,7 @@
 package com.github.eljah.tulpar.service.impl;
 
+import com.github.eljah.tulpar.annotation.LocalShell;
+import com.github.eljah.tulpar.annotation.TestHttpRequest;
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
 import com.github.eljah.tulpar.model.metric.Data;
@@ -163,7 +165,25 @@ public class TestServiceImpl implements TestService {
         return toReturn;
     }
 
+    @TestHttpRequest
+    //@LocalShell
+    public List<String> printSelfTest(Test t) {
+        List<String> toReturn = new LinkedList<String>() {
+        };
+        if (t.getProfile().getMetrics() != null) {
+            for (Metric pd : t.getProfile().getMetrics()) {
+                String toRet = pd.getName();
+                System.out.println("Request will be sent to metrics: " + toRet);
+                toReturn.add(toRet);
+            }
+        }
+        return toReturn;
+    }
+
+
     @Override
+    //@TestHttpRequest
+    //@LocalShell
     public List<String> printMetricsBeforeAction(Test t) {
         List<String> toReturn = new LinkedList<String>() {
         };
@@ -178,6 +198,8 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    //@TestHttpRequest
+    //@LocalShell
     public List<String> printMetricsForStreamAction(Test t) {
         List<String> toReturn = new LinkedList<String>() {
         };
