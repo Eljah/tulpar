@@ -1,6 +1,7 @@
 package com.github.eljah.tulpar.service.impl;
 
 import com.github.eljah.tulpar.annotation.LocalShell;
+import com.github.eljah.tulpar.annotation.RemoteShell;
 import com.github.eljah.tulpar.annotation.TestHttpRequest;
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
@@ -140,24 +141,27 @@ public class TestServiceImpl implements TestService {
         return testRepository.findOne(id);
     }
 
-    public String printProfileStartAction(Test t) {
-        String toReturn = null;
+    @LocalShell
+    public List<String> printProfileStartAction(Test t) {
+        List<String> toReturn = new LinkedList<String>(){};
         if (t.getProfile().getStartAction() != null) {
-            toReturn = t.getProfile().getStartAction();
+            toReturn.add(t.getProfile().getStartAction());
             System.out.println("StartAction: " + toReturn);
         }
         return toReturn;
     }
 
-    public String printProfileEndAction(Test t) {
-        String toReturn = null;
+    @LocalShell
+    public List<String> printProfileEndAction(Test t) {
+        List<String> toReturn = new LinkedList<String>(){};
         if (t.getProfile().getEndAction() != null) {
-            toReturn = t.getProfile().getEndAction();
+            toReturn.add(t.getProfile().getEndAction());
             System.out.println("EndAction: " + toReturn);
         }
         return toReturn;
     }
 
+    @LocalShell
     public List<String> printProfileDiffs(Test t) {
         List<String> toReturn = new LinkedList<String>() {
         };
@@ -166,6 +170,37 @@ public class TestServiceImpl implements TestService {
                 String toRet = pd.getAction();
                 System.out.println("ProfileDiff: " + toRet);
                 toReturn.add(toRet);
+            }
+        }
+        return toReturn;
+    }
+
+    @LocalShell
+    public List<String> printProfileDiffsLocal(Test t) {
+        List<String> toReturn = new LinkedList<String>() {
+        };
+        if (t.getProfile().getProfileDiffs() != null) {
+            for (ProfileDiff pd : t.getProfile().getProfileDiffs()) {
+                if (pd.getType().equals("2")) {
+                    String toRet = pd.getAction();
+                    System.out.println("ProfileDiff: " + toRet);
+                    toReturn.add(toRet);
+                }
+            }
+        }
+        return toReturn;
+    }
+
+    @RemoteShell
+    public List<String> printProfileDiffsRemote(Test t) {
+        List<String> toReturn = new LinkedList<String>() {
+        };
+        if (t.getProfile().getProfileDiffs() != null) {
+            for (ProfileDiff pd : t.getProfile().getProfileDiffs()) {
+                if (pd.getType().equals("3")) {
+                String toRet = pd.getAction();
+                System.out.println("ProfileDiff: " + toRet);
+                toReturn.add(toRet);}
             }
         }
         return toReturn;
@@ -189,7 +224,7 @@ public class TestServiceImpl implements TestService {
 
     @Override
     //@TestHttpRequest
-    //@LocalShell
+    @RemoteShell
     public List<String> printMetricsBeforeAction(Test t) {
         List<String> toReturn = new LinkedList<String>() {
         };
@@ -206,6 +241,7 @@ public class TestServiceImpl implements TestService {
     @Override
     //@TestHttpRequest
     //@LocalShell
+    @RemoteShell
     public List<String> printMetricsForStreamAction(Test t) {
         List<String> toReturn = new LinkedList<String>() {
         };

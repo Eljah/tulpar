@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayDeque;
+import java.util.List;
 
 /**
  * Created by eljah32 on 3/3/2016.
@@ -60,8 +61,25 @@ public class TestThread extends Thread {
             if (!q.isEmpty()) {
                 Test t = (Test) q.pop();
                 if (t != null) {
-                    testService.printProfileDiffs(t);
-                    testService.printMetricsForStreamAction(t);
+
+                    List<String> profiledisslocoutput=testService.printProfileDiffsLocal(t);
+                    for (String i: profiledisslocoutput)
+                    {
+                        System.out.println(i);
+                    }
+
+                    List<String> profiledissremoutput=testService.printProfileDiffsRemote(t);
+                    for (String i: profiledissremoutput)
+                    {
+                        System.out.println(i);
+                    }
+
+                    List<String> metruicsoutput=testService.printMetricsForStreamAction(t);
+
+                    for (String i: metruicsoutput)
+                    {
+                        System.out.println(i);
+                    }
                     //todo metrics setup for stream metrics
 
                     for (TestRun tr : t.getTestRuns()) {

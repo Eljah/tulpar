@@ -55,103 +55,112 @@ public class ShellExecutionAspect {
         Class clazz = joinPoint.getTarget().getClass();
         //Method method = clazz.getMethod(joinPoint.getSignature().getName());
         //RemoteShell remote = method.getAnnotation(RemoteShell.class);
-        String action = (String) joinPoint.proceed();
+        List<String> action = (List<String>) joinPoint.proceed();
         System.out.println("Command for execution obtained, will be passed to ssh remotely");
 
         JSch jsch = new JSch();
         java.util.Properties config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
 
+        List<String> listtoreturn = new LinkedList<String>() {
+        };
 
-        String lastInputString = "";
+        for (String ac : action) {
 
-        try {
-            Session session = jsch.getSession(user, host, 22);
-            session.setPassword(password);
-            session.setConfig(config);
-            //todo user info
-            session.connect(30000);
-            Channel channel = session.openChannel("exec");
-            ((ChannelExec) channel).setCommand(action);
+            String lastInputString = "";
 
-            // X Forwarding
-            // channel.setXForwarding(true);
+            try {
+                Session session = jsch.getSession(user, host, 22);
+                session.setPassword(password);
+                session.setConfig(config);
+                //todo user info
+                session.connect(30000);
+                Channel channel = session.openChannel("exec");
+                ((ChannelExec) channel).setCommand(ac);
 
-            //channel.setInputStream(System.in);
-            channel.setInputStream(null);
+                // X Forwarding
+                // channel.setXForwarding(true);
 
-            //channel.setOutputStream(System.out);
+                //channel.setInputStream(System.in);
+                channel.setInputStream(null);
 
-            //FileOutputStream fos=new FileOutputStream("/tmp/stderr");
-            //((ChannelExec)channel).setErrStream(fos);
-            ((ChannelExec) channel).setErrStream(System.err);
+                //channel.setOutputStream(System.out);
 
-            InputStream in = channel.getInputStream();
+                //FileOutputStream fos=new FileOutputStream("/tmp/stderr");
+                //((ChannelExec)channel).setErrStream(fos);
+                ((ChannelExec) channel).setErrStream(System.err);
 
-            channel.connect();
+                InputStream in = channel.getInputStream();
+
+                channel.connect();
 
 
-            byte[] tmp = new byte[1024];
-            while (true) {
-                while (in.available() > 0) {
-                    int i = in.read(tmp, 0, 1024);
-                    if (i < 0) break;
-                    String buff = new String(tmp, 0, i);
-                    System.out.print(buff);
-                    lastInputString = lastInputString + buff;
+                byte[] tmp = new byte[1024];
+                while (true) {
+                    while (in.available() > 0) {
+                        int i = in.read(tmp, 0, 1024);
+                        if (i < 0) break;
+                        String buff = new String(tmp, 0, i);
+                        System.out.print(buff);
+                        lastInputString = lastInputString + buff;
+                    }
+                    if (channel.isClosed()) {
+                        if (in.available() > 0) continue;
+                        System.out.println("exit-status: " + channel.getExitStatus());
+                        break;
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception ee) {
+                    }
                 }
-                if (channel.isClosed()) {
-                    if (in.available() > 0) continue;
-                    System.out.println("exit-status: " + channel.getExitStatus());
-                    break;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception ee) {
-                }
+                channel.disconnect();
+                session.disconnect();
+
+                listtoreturn.add(lastInputString);
+            } catch (JSchException e) {
+                e.printStackTrace();
+                throw new RuntimeException("SchException e");
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("IOException e");
             }
-            channel.disconnect();
-            session.disconnect();
-
-        } catch (JSchException e) {
-            e.printStackTrace();
-            throw new RuntimeException("SchException e");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("IOException e");
         }
-
-
-        return lastInputString;
+        return listtoreturn;
     }
 
     public Object callLocalShell(ProceedingJoinPoint joinPoint) throws Throwable {
         Class clazz = joinPoint.getTarget().getClass();
         //Method method = clazz.getMethod(joinPoint.getSignature().getName());
         //RemoteShell jsch = method.getAnnotation(RemoteShell.class);
-        String action = (String) joinPoint.proceed();
+        List<String> action = (List<String>) joinPoint.proceed();
         System.out.println("Command for execution obtained, will be passed to local shell");
 
 
+        List<String> responce = new LinkedList<String>() {
+        };
         StringBuffer output = new StringBuffer();
 
         Process p;
-        try {
-            p = Runtime.getRuntime().exec(action);
-            p.waitFor();
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(p.getInputStream()));
+        for (String oneAction : action) {
+            try {
+                p = Runtime.getRuntime().exec(oneAction);
+                p.waitFor();
+                BufferedReader reader =
+                        new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-            String line = "";
-            while ((line = reader.readLine()) != null) {
-                output.append(line + "\n");
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    output.append(line + "\n");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        return output.toString();
+        responce.add(output.toString());
+        return responce;
     }
 
 
@@ -160,11 +169,12 @@ public class ShellExecutionAspect {
         //Method method = clazz.getMethod(joinPoint.getSignature().getName());
         //RemoteShell jsch = method.getAnnotation(RemoteShell.class);
         List<String> actions = (List<String>) joinPoint.proceed();
-        List<String> toRespond=new LinkedList<String >(){};
-        for (String action: actions) {
+        List<String> toRespond = new LinkedList<String>() {
+        };
+        for (String action : actions) {
             System.out.println("Command for execution obtained, will be passed to local shell");
 
-            String url = "http://localhost:8888/data/" + action + "/"+Math.random()*100;
+            String url = "http://localhost:8888/data/" + action + "/" + Math.random() * 100;
             System.out.println(url);
             StringBuffer result = new StringBuffer();
             HttpClient client = HttpClientBuilder.create().build();

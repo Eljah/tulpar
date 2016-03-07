@@ -41,11 +41,12 @@ public interface TestService {
 
     List<Test> getAll();
 
-    public String printProfileStartAction(Test t);
+    public List<String> printProfileStartAction(Test t);
 
-    public String printProfileEndAction(Test t);
+    public List<String> printProfileEndAction(Test t);
 
-    public List<String> printProfileDiffs(Test t);
+    public List<String> printProfileDiffsLocal(Test t);
+    public List<String> printProfileDiffsRemote(Test t);
 
     public List<String> printMetricsBeforeAction(Test t);
 
