@@ -5,7 +5,9 @@ import com.github.eljah.tulpar.annotation.TestHttpRequest;
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.TestRun;
 import com.github.eljah.tulpar.model.metric.*;
+import com.github.eljah.tulpar.model.profile.Profile;
 import com.github.eljah.tulpar.model.profile.ProfileDiff;
+import com.github.eljah.tulpar.repository.ProfileRepository;
 import com.github.eljah.tulpar.repository.ResultRepository;
 import com.github.eljah.tulpar.repository.TestRepository;
 import com.github.eljah.tulpar.repository.TestRunRepository;
@@ -35,6 +37,9 @@ public class TestServiceImpl implements TestService {
     @Autowired
     ResultRepository resultRepository;
 
+    @Autowired
+    ProfileRepository profileRepository;
+
     static ArrayDeque<Test> testQueue = new ArrayDeque<Test>();
 
     @Autowired
@@ -49,7 +54,11 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public void addTest(Test test) {
+        List<Test> testsOfProfile=test.getProfile().getTests();
+        testsOfProfile.add(test);
+        test.getProfile().setTests(testsOfProfile);
         testRepository.save(test);
+        //profileRepository.save(test.getProfile());
     }
 
     @Override
@@ -71,7 +80,7 @@ public class TestServiceImpl implements TestService {
             testRunList.add(tr);
             addTestRun(tr);
         }
-        updateTest(cloned);
+        addTest(cloned);
 
     }
 
@@ -405,6 +414,95 @@ public class TestServiceImpl implements TestService {
         testMetricResultList.addAll(results);
         t.setTestMetricResults(testMetricResultList);
         updateTest(t);
+    }
+
+
+    @Override
+    public void calculateProfileResults(Profile p) {
+        System.out.println("Calculating profile results");
+
+        List<ProfileMetricResult> results = new LinkedList<ProfileMetricResult>();
+        List<Metric> metrics = new LinkedList<Metric>();
+
+        for (Test t: p.getTests()) {
+            //obtaining all collcted Metrics todo both types stram for now only
+            for (TestRun tr : t.getTestRuns()) {
+                List<TestRunMetricResult> m = tr.getTestRunMetricResults();
+                for (TestRunMetricResult trmr : m) {
+                    if (!metrics.contains(trmr.getMetric())) {
+                        System.out.println("New metric is fount: " + trmr.getMetric().getName());
+                        metrics.add(trmr.getMetric());
+                        ProfileMetricResult tmr = new ProfileMetricResult();
+                        trmr.setMetric(trmr.getMetric());
+                        results.add(tmr);
+                    }
+                }
+            }
+
+        }
+        results.clear(); //todo >.<
+
+        for (Metric m : metrics) {
+
+            int counter = 0;
+            long averager = 0;
+            long averagerSq = 0;
+            long delter = 0;
+            long lastMaxValue = 0;
+            long lastMinValue = 0;
+            Data lowestData = null;
+            Data highestData = null;
+            long highest = Long.MIN_VALUE;
+            long lowest = Long.MAX_VALUE;
+
+            ProfileMetricResult tmr = new ProfileMetricResult();
+            tmr.setMetric(m);
+            for (Test t: p.getTests()) {
+
+                for (TestRun tr : t.getTestRuns()) {
+                    for (TestRunMetricResult testRunMetricResult : tr.getTestRunMetricResults()) {
+                        {
+                            if (m.equals(testRunMetricResult.getMetric())) {
+                                averagerSq = averagerSq + (testRunMetricResult.getAverage()) * (testRunMetricResult.getAverage());
+                                averager = averager + testRunMetricResult.getAverage();
+                                delter = delter + testRunMetricResult.getAverageDelta();
+                                counter++;
+                                lastMaxValue = testRunMetricResult.getMax().getValue();
+                                lastMinValue = testRunMetricResult.getMin().getValue();
+
+                                if (lastMinValue < lowest) {
+                                    lowest = lastMinValue;
+                                    lowestData = testRunMetricResult.getMin();
+                                }
+                                if (lastMaxValue > highest) {
+                                    highest = lastMaxValue;
+                                    highestData = testRunMetricResult.getMax();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (counter > 0) {
+                tmr.setAverage(averager / counter);
+                tmr.setAverageDelta(delter / (counter));
+                tmr.setDispersion((averagerSq / counter) - (averager / counter) * (averager / counter));
+            } else {
+                tmr.setAverage(0l);
+                tmr.setAverageDelta(0l);
+                tmr.setDispersion(0l);
+            }
+            tmr.setMax(highestData);
+            tmr.setMin(lowestData);
+            resultRepository.save(tmr);
+            results.add(tmr);
+            System.out.println("Calculated for metric: " + tmr.getMetric());
+        }
+        List<ProfileMetricResult> testMetricResultList = p.getProfileMetricResult();
+        testMetricResultList.clear();
+        testMetricResultList.addAll(results);
+        p.setProfileMetricResult(testMetricResultList);
+        profileRepository.save(p);
     }
 
 

@@ -69,4 +69,5 @@ public interface TestService {
 
     public TestRun getCurrentTestRun();
 
+    public void calculateProfileResults(Profile p);
 }

@@ -2,6 +2,7 @@ package com.github.eljah.tulpar.model.profile;
 
 import com.github.eljah.tulpar.model.Test;
 import com.github.eljah.tulpar.model.metric.Metric;
+import com.github.eljah.tulpar.model.metric.ProfileMetricResult;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,7 +25,7 @@ public class Profile {
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Metric> metrics;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Test> tests;
 
     String name;
@@ -34,6 +35,9 @@ public class Profile {
 
     @Column
     String endAction;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    List<ProfileMetricResult> profileMetricResult;
 
     public long getId() {
         return id;
@@ -91,4 +95,11 @@ public class Profile {
         this.endAction = endAction;
     }
 
+    public List<ProfileMetricResult> getProfileMetricResult() {
+        return profileMetricResult;
+    }
+
+    public void setProfileMetricResult(List<ProfileMetricResult> profileMetricResult) {
+        this.profileMetricResult = profileMetricResult;
+    }
 }
