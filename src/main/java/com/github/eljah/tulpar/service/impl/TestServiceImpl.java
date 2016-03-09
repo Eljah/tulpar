@@ -247,7 +247,7 @@ public class TestServiceImpl implements TestService {
         };
         if (t.getProfile().getMetrics() != null) {
             for (Metric pd : t.getProfile().getMetrics()) {
-                if (pd.getType().equals("0")) {
+                if (pd.getType().equals("1")) {
                     String toRet = pd.getAnotherAction();
                     System.out.println("MetricsStream: " + toRet);
                     toReturn.add(toRet);
@@ -259,12 +259,13 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    @RemoteShell
     public List<String> printMetricsAfterAction(Test t) {
         List<String> toReturn = new LinkedList<String>() {
         };
         if (t.getProfile().getMetrics() != null) {
             for (Metric pd : t.getProfile().getMetrics()) {
-                if (pd.getType().equals("1")) {
+                if (pd.getType().equals("0")) {
                     String toRet = pd.getAnotherAction();
                     System.out.println("MetricsAfter: " + toRet);
                     toReturn.add(toRet);
@@ -279,6 +280,15 @@ public class TestServiceImpl implements TestService {
         long DurationInMins = t.getDuration();
         try {
             Thread.sleep((DurationInMins * 1000 * 60));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void pauseForCompletion(long millisecs) {
+        try {
+            Thread.sleep(millisecs);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -307,14 +317,15 @@ public class TestServiceImpl implements TestService {
         for (TestRunMetricResult testRunMetricResult : results) {
 
             int counter = 0;
-            long averager = 0;
-            long averagerSq = 0;
-            long delter = 0;
-            long lastValue = 0;
+            Double averager = 0d;
+           Double averagerSq = 0d;
+            Double delter = 0d;
+            Double delterSq = 0d;
+            Double lastValue = 0d;
             Data lowestData = null;
             Data highestData = null;
-            long highest = Long.MIN_VALUE;
-            long lowest = Long.MAX_VALUE;
+            Double highest = (double)Long.MIN_VALUE;
+            Double lowest = (double)Long.MAX_VALUE;
 
             for (Data d : t.getDatas()) {
                 if (d.getMetric().equals(testRunMetricResult.getMetric())) {
@@ -322,6 +333,7 @@ public class TestServiceImpl implements TestService {
                     averagerSq = averagerSq + d.getValue() * d.getValue();
 
                     if (counter > 0) {
+                        delterSq = delterSq + (d.getValue() - lastValue) * (d.getValue() - lastValue);
                         delter = delter + (d.getValue() - lastValue);
                     }
                     counter++;
@@ -339,15 +351,16 @@ public class TestServiceImpl implements TestService {
 
             if (counter > 0) {
                 testRunMetricResult.setAverage(averager / counter);
-                testRunMetricResult.setDispersion((averagerSq / counter) - (averager / counter) * (averager / counter));
+                testRunMetricResult.setDispersion(Math.sqrt((averagerSq / counter) - (averager / counter) * (averager / counter)));
             } else {
-                testRunMetricResult.setAverage(0l);
-                testRunMetricResult.setDispersion(0l);
+                testRunMetricResult.setAverage(0d);
+                testRunMetricResult.setDispersion(0d);
             }
             if (counter > 1) {
                 testRunMetricResult.setAverageDelta(delter / (counter - 1));
+                testRunMetricResult.setDispersionDelta(Math.sqrt((delterSq / counter) - (delter / counter) * (delter / counter)));
             } else {
-                testRunMetricResult.setAverageDelta(0l);
+                testRunMetricResult.setAverageDelta(0d);
             }
             testRunMetricResult.setMax(highestData);
             testRunMetricResult.setMin(lowestData);
@@ -396,15 +409,16 @@ public class TestServiceImpl implements TestService {
         for (Metric m : metrics) {
 
             int counter = 0;
-            long averager = 0;
-            long averagerSq = 0;
-            long delter = 0;
-            long lastMaxValue = 0;
-            long lastMinValue = 0;
+            Double averager = 0d;
+            Double averagerSq = 0d;
+            Double delter = 0d;
+            Double delterSq = 0d;
+            Double lastMaxValue = 0d;
+            Double lastMinValue = 0d;
             Data lowestData = null;
             Data highestData = null;
-            long highest = Long.MIN_VALUE;
-            long lowest = Long.MAX_VALUE;
+            Double highest = (double)Long.MIN_VALUE;
+            Double lowest = (double)Long.MAX_VALUE;
 
             TestMetricResult tmr = new TestMetricResult();
             tmr.setMetric(m);
@@ -415,6 +429,8 @@ public class TestServiceImpl implements TestService {
                             averagerSq = averagerSq + (testRunMetricResult.getAverage()) * (testRunMetricResult.getAverage());
                             averager = averager + testRunMetricResult.getAverage();
                             delter = delter + testRunMetricResult.getAverageDelta();
+                            delterSq = delterSq + (testRunMetricResult.getAverageDelta()) * (testRunMetricResult.getAverageDelta());
+
                             counter++;
                             lastMaxValue = testRunMetricResult.getMax().getValue();
                             lastMinValue = testRunMetricResult.getMin().getValue();
@@ -434,11 +450,12 @@ public class TestServiceImpl implements TestService {
             if (counter > 0) {
                 tmr.setAverage(averager / counter);
                 tmr.setAverageDelta(delter / (counter));
-                tmr.setDispersion((averagerSq / counter) - (averager / counter) * (averager / counter));
+                tmr.setDispersion(Math.sqrt((averagerSq / counter) - (averager / counter) * (averager / counter)));
+                tmr.setDispersionDelta(Math.sqrt((delterSq / counter) - (delter / counter) * (delter / counter)));
             } else {
-                tmr.setAverage(0l);
-                tmr.setAverageDelta(0l);
-                tmr.setDispersion(0l);
+                tmr.setAverage(0d);
+                tmr.setAverageDelta(0d);
+                tmr.setDispersion(0d);
             }
             tmr.setMax(highestData);
             tmr.setMin(lowestData);
@@ -481,15 +498,16 @@ public class TestServiceImpl implements TestService {
         for (Metric m : metrics) {
 
             int counter = 0;
-            long averager = 0;
-            long averagerSq = 0;
-            long delter = 0;
-            long lastMaxValue = 0;
-            long lastMinValue = 0;
+            Double averager = 0d;
+            Double averagerSq = 0d;
+            Double delter = 0d;
+            Double delterSq = 0d;
+            Double lastMaxValue = 0d;
+            Double lastMinValue = 0d;
             Data lowestData = null;
             Data highestData = null;
-            long highest = Long.MIN_VALUE;
-            long lowest = Long.MAX_VALUE;
+            Double highest = (double)Long.MIN_VALUE;
+            Double lowest = (double)Long.MAX_VALUE;
 
             ProfileMetricResult tmr = new ProfileMetricResult();
             tmr.setMetric(m);
@@ -502,6 +520,8 @@ public class TestServiceImpl implements TestService {
                                 averagerSq = averagerSq + (testRunMetricResult.getAverage()) * (testRunMetricResult.getAverage());
                                 averager = averager + testRunMetricResult.getAverage();
                                 delter = delter + testRunMetricResult.getAverageDelta();
+                                delterSq = delterSq + (testRunMetricResult.getAverageDelta()) * (testRunMetricResult.getAverageDelta());
+
                                 counter++;
                                 lastMaxValue = testRunMetricResult.getMax().getValue();
                                 lastMinValue = testRunMetricResult.getMin().getValue();
@@ -523,10 +543,11 @@ public class TestServiceImpl implements TestService {
                 tmr.setAverage(averager / counter);
                 tmr.setAverageDelta(delter / (counter));
                 tmr.setDispersion((averagerSq / counter) - (averager / counter) * (averager / counter));
+                tmr.setDispersionDelta(Math.sqrt((delterSq / counter) - (delter / counter) * (delter / counter)));
             } else {
-                tmr.setAverage(0l);
-                tmr.setAverageDelta(0l);
-                tmr.setDispersion(0l);
+                tmr.setAverage(0d);
+                tmr.setAverageDelta(0d);
+                tmr.setDispersion(0d);
             }
             tmr.setMax(highestData);
             tmr.setMin(lowestData);
@@ -559,6 +580,7 @@ public class TestServiceImpl implements TestService {
     public TestRun getCurrentTestRun() {
         return currentTest;
     }
+
 
 
 }

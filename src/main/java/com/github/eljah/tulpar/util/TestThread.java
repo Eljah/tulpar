@@ -87,7 +87,7 @@ public class TestThread extends Thread {
                         testService.printMetricsBeforeAction(t);
                         //todo metrics before action
                         testService.printProfileStartAction(t);
-                        testService.printSelfTest(t); //todo remove
+                        //testService.printSelfTest(t); //todo remove
                         testService.pauseForDuration(t);
 
                         //todo test runs loop; do test run metrics calculation
@@ -95,9 +95,10 @@ public class TestThread extends Thread {
                         //to metrics last action if it is
                         //todo calculate test metrics
                         //todo
-                        testService.printSelfTest(t); //todo remove
+                        //testService.printSelfTest(t); //todo remove
                         testService.printProfileEndAction(t);
                         testService.printMetricsAfterAction(t);
+                        testService.pauseForCompletion(60000);
                         testService.updateTestRun(testService.getCurrentTestRun());
                         testService.removeCurrentTestRun();
                         testService.calculateTestRunResults(tr);

@@ -22,7 +22,7 @@ public class Data {
     TestRun testRun;
 
     Date date;
-    Long value;
+    Double value;
 
     public long getId() {
         return id;
@@ -56,11 +56,11 @@ public class Data {
         this.date = date;
     }
 
-    public Long getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public void setValue(Long value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 

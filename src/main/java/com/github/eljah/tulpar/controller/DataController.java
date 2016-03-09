@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * Created by eljah32 on 3/5/2016.
@@ -37,15 +36,29 @@ public class DataController {
     TestService testService;
 
 
-    @RequestMapping("/data/{metric}/{value}")
+    @RequestMapping("/data/{metric}/{value:.+}")
     @ResponseStatus(HttpStatus.OK)
     public void addTest(@PathVariable("metric") String metric, @PathVariable("value") String value) {
         Data data = new Data();
         data.setDate(new Date());
         Metric m = metricService.get(metric);
+        System.out.println(new Date()+": New metric "+metric+ " sent with parameter "+value);
         if (m != null) {
             data.setMetric(m);
-            data.setValue(Long.parseLong(value));
+            try {
+                data.setValue(Double.parseDouble(value));
+            }
+            catch (NumberFormatException n)
+            {
+                NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
+                Number number = null;
+                try {
+                    number = format.parse(value);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                data.setValue(number.doubleValue());
+            }
             TestRun current = testService.getCurrentTestRun();
             if (current != null) {
                 data.setTestRun(current);

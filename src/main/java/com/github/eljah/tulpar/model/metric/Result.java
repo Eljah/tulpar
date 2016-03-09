@@ -19,11 +19,16 @@ public abstract class Result {
     @ManyToOne
     Metric metric;
 
-    Long average;
+    Double average;
 
-    Long averageDelta;
+    Double averageDelta;
 
-    Long dispersion;
+    @Column(nullable = false)
+    Double dispersion=0d;
+
+
+    @Column(nullable = false)
+    Double dispersionDelta=0d;
 
     @OneToOne
     Data max;
@@ -49,11 +54,11 @@ public abstract class Result {
         this.metric = metric;
     }
 
-    public Long getAverage() {
+    public Double getAverage() {
         return average;
     }
 
-    public void setAverage(Long average) {
+    public void setAverage(Double average) {
         this.average = average;
     }
 
@@ -73,19 +78,19 @@ public abstract class Result {
         this.min = min;
     }
 
-    public Long getAverageDelta() {
+    public Double getAverageDelta() {
         return averageDelta;
     }
 
-    public void setAverageDelta(Long averageDelta) {
+    public void setAverageDelta(Double averageDelta) {
         this.averageDelta = averageDelta;
     }
 
-    public Long getDispersion() {
+    public Double getDispersion() {
         return dispersion;
     }
 
-    public void setDispersion(Long dispersion) {
+    public void setDispersion(Double dispersion) {
         this.dispersion = dispersion;
     }
 
@@ -95,5 +100,13 @@ public abstract class Result {
 
     public void setTestRun(TestRun testRun) {
         this.testRun = testRun;
+    }
+
+    public Double getDispersionDelta() {
+        return dispersionDelta;
+    }
+
+    public void setDispersionDelta(Double dispersionDelta) {
+        this.dispersionDelta = dispersionDelta;
     }
 }

@@ -57,6 +57,7 @@ public interface TestService {
     public List<String> printSelfTest(Test t);
 
     public void pauseForDuration(Test t);
+    public void pauseForCompletion(long millisecs);
 
     public void calculateTestRunResults(TestRun t);
 
